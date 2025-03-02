@@ -1,0 +1,4 @@
+/.idea
+/cmake-build-debug
+/cmake-build-docker-x64
+CMakeLists.txt
