@@ -25,9 +25,8 @@ list_t* list_init() {
 
 void insert_at_head(list_t* list, const void* data, const  size_t bytes) {
     node_t* new_node = malloc(sizeof(node_t));
-    if(new_node == NULL) {
+    if(new_node == NULL)
         goto alloc_fail_2;
-    }
 
     new_node->data = malloc(bytes);
     if(new_node->data == NULL)
