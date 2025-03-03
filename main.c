@@ -23,7 +23,7 @@ list_t* list_init() {
     return new_list;
 }
 
-void insert_at_head(list_t* list, const void* data, const  size_t bytes) {
+void insert_at_head(list_t* list, const void* data, const size_t bytes) {
     node_t* new_node = malloc(sizeof(node_t));
     if(new_node == NULL)
         goto alloc_fail_2;
@@ -33,17 +33,53 @@ void insert_at_head(list_t* list, const void* data, const  size_t bytes) {
         goto alloc_fail_1;
 
     memcpy(new_node->data, data, bytes);
-    new_node->next = list->head;
-    if(list->tail == NULL)
-        list->tail = list->head;
-    list->head = new_node;
+    if(list->head == NULL) {
+        list->head = new_node;
+        list->tail = new_node;
+        new_node->next = NULL;
+    } else {
+        new_node->next = list->head;
+        list->head = new_node;
+    }
 
     return;
 
     alloc_fail_1:
-    free(new_node->data);
+        free(new_node->data);
+        new_node->data = NULL;
     alloc_fail_2:
-    free(new_node);
+        free(new_node);
+        new_node = NULL;
+}
+
+void insert_at_tail(list_t* list, const void* data, const size_t bytes) {
+    node_t* new_node = malloc(sizeof(node_t));
+    if(new_node == NULL)
+        goto alloc_fail_2;
+
+    new_node->data = malloc(bytes);
+    if(new_node->data == NULL)
+        goto alloc_fail_1;
+
+    memcpy(new_node->data, data, bytes);
+    if(list->head == NULL) {
+        list->head = new_node;
+        list->tail = new_node;
+        new_node->next = NULL;
+    } else {
+        new_node->next = NULL;
+        list->tail->next = new_node;
+        list->tail = new_node;
+    }
+
+    return;
+
+    alloc_fail_1:
+        free(new_node->data);
+        new_node->data = NULL;
+    alloc_fail_2:
+        free(new_node);
+        new_node = NULL;
 }
 
 void free_list(list_t* list) {
@@ -59,7 +95,7 @@ void free_list(list_t* list) {
     list = NULL;
 }
 
-void print_list(list_t* list) {
+void print_list(const list_t* list) {
     node_t* temp = list->head;
     while (temp != NULL) {
         printf("%s", (char*)temp->data);
@@ -69,9 +105,10 @@ void print_list(list_t* list) {
 
 int main(void) {
     list_t* my_list = list_init();
-    insert_at_head(my_list, "snafu\n", sizeof("snafu\n"));
+    insert_at_head(my_list, "snafu ", sizeof("snafu "));
     insert_at_head(my_list, "bar ", sizeof("bar "));
     insert_at_head(my_list, "foo ", sizeof("foo "));
+    insert_at_tail(my_list, "tail!\n", sizeof("tail!\n"));
     print_list(my_list);
     free_list(my_list);
 
