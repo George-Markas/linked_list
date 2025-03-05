@@ -17,6 +17,7 @@ typedef struct List {
 list_t* list_init(void);
 void insert_at_head(list_t* list, const void* data, const size_t bytes);
 void insert_at_tail(list_t* list, const void* data, const size_t bytes);
+void insert_after(list_t* list, const size_t index, const void* data, const size_t bytes);
 void free_list(list_t* list);
 
 #endif // LINKED_LIST_H
@@ -24,6 +25,7 @@ void free_list(list_t* list);
 #ifdef LINKED_LIST_IMPL
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 inline list_t* list_init(void) {
     list_t *new_list = malloc(sizeof(list_t));
@@ -84,6 +86,35 @@ inline void insert_at_tail(list_t* list, const void* data, const size_t bytes) {
         list->tail->next = new_node;
         list->tail = new_node;
     }
+
+    return;
+
+    alloc_fail_1:
+        free(new_node->data);
+        new_node->data = NULL;
+    alloc_fail_2:
+        free(new_node);
+        new_node = NULL;
+}
+
+inline void insert_after(list_t* list, const size_t index, const void* data, const size_t bytes) {
+    node_t* new_node = malloc(sizeof(node_t));
+    if(new_node == NULL)
+        goto alloc_fail_2;
+
+    new_node->data = malloc(bytes);
+    if(new_node->data == NULL)
+        goto alloc_fail_1;
+
+    memcpy(new_node->data, data, bytes);
+
+    node_t* insert_after = list->head;
+    assert(insert_after != NULL);
+    for(size_t i = 0; i < index && (insert_after->next != NULL); i++) {
+        insert_after = insert_after->next;
+    }
+    new_node->next = insert_after->next;
+    insert_after->next = new_node;
 
     return;
 
