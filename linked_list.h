@@ -13,17 +13,20 @@ typedef struct List {
 } list_t;
 
 #include <stdio.h>
+#include <stdlib.h>
 
 list_t* list_init(void);
 void insert_at_head(list_t* list, const void* data, const size_t bytes);
 void insert_at_tail(list_t* list, const void* data, const size_t bytes);
-void insert_after(list_t* list, const size_t index, const void* data, const size_t bytes);
+void insert_after(const list_t* list, const int32_t index, const void* data, const size_t bytes);
+void delete_head(list_t* list);
+// TODO
+//void delete_after(const list_t* list, const int32_t index);
 void free_list(list_t* list);
 
 #endif // LINKED_LIST_H
 
 #ifdef LINKED_LIST_IMPL
-#include <stdlib.h>
 #include <string.h>
 #include <assert.h>
 
@@ -97,7 +100,7 @@ inline void insert_at_tail(list_t* list, const void* data, const size_t bytes) {
         new_node = NULL;
 }
 
-inline void insert_after(list_t* list, const size_t index, const void* data, const size_t bytes) {
+inline void insert_after(const list_t* list, const int32_t index, const void* data, const size_t bytes) {
     node_t* new_node = malloc(sizeof(node_t));
     if(new_node == NULL)
         goto alloc_fail_2;
@@ -109,8 +112,8 @@ inline void insert_after(list_t* list, const size_t index, const void* data, con
     memcpy(new_node->data, data, bytes);
 
     node_t* insert_after = list->head;
-    assert(insert_after != NULL);
-    for(size_t i = 0; i < index && (insert_after->next != NULL); i++) {
+    assert((insert_after != NULL) && (index > -1));
+    for(int32_t i = 0; i < index && (insert_after->next != NULL); i++) {
         insert_after = insert_after->next;
     }
     new_node->next = insert_after->next;
@@ -125,6 +128,20 @@ inline void insert_after(list_t* list, const size_t index, const void* data, con
         free(new_node);
         new_node = NULL;
 }
+
+inline void delete_head(list_t* list) {
+    node_t* temp = list->head;
+    assert(temp != NULL);
+    list->head = list->head->next;
+    free(temp->data);
+    temp->data = NULL;
+    free(temp);
+    temp = NULL;
+}
+
+// TODO
+// inline void delete_after(const list_t* list, const int32_t index) {
+// }
 
 inline void free_list(list_t* list) {
     while(list->head != NULL) {
