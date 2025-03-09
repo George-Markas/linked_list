@@ -20,8 +20,7 @@ void insert_at_head(list_t* list, const void* data, const size_t bytes);
 void insert_at_tail(list_t* list, const void* data, const size_t bytes);
 void insert_after(const list_t* list, const int32_t index, const void* data, const size_t bytes);
 void delete_head(list_t* list);
-// TODO
-//void delete_after(const list_t* list, const int32_t index);
+void delete(list_t* list, const int32_t index);
 void free_list(list_t* list);
 
 #endif // LINKED_LIST_H
@@ -85,13 +84,13 @@ inline void insert_after(const list_t* list, const int32_t index, const void* da
 
     memcpy(new_node->data, data, bytes);
 
-    node_t* insert_after = list->head;
-    assert((insert_after != NULL) && (index > -1));
-    for(int32_t i = 0; i < index && (insert_after->next != NULL); i++) {
-        insert_after = insert_after->next;
+    node_t* temp = list->head;
+    assert((temp != NULL) && (index > -1));
+    for(int32_t i = 0; i < index && (temp->next != NULL); i++) {
+        temp = temp->next;
     }
-    new_node->next = insert_after->next;
-    insert_after->next = new_node;
+    new_node->next = temp->next;
+    temp->next = new_node;
 }
 
 inline void delete_head(list_t* list) {
@@ -104,12 +103,27 @@ inline void delete_head(list_t* list) {
     temp = NULL;
 }
 
-// TODO
-// inline void delete_after(const list_t* list, const int32_t index) {
-// }
+inline void delete(list_t* list, const int32_t index) {
+    node_t* temp = list->head;
+    node_t* prev = list->head;
+    assert((temp != NULL) && (index > -1));
+    for(int32_t i = 0; i < index && (temp->next != NULL); i++) {
+        if(i)
+            prev = temp;
+        temp = temp->next;
+    }
+    free(temp->data);
+    temp->data = NULL;
+    prev->next = temp->next;
+    if(temp == list->head)
+        list->head = list->head->next;
+    if(temp == list->tail)
+        list->tail = prev;
+    free(temp);
+}
 
 inline void free_list(list_t* list) {
-    while (list->head != NULL) {
+    while(list->head != NULL) {
         node_t* next = list->head->next;
         free(list->head->data);
         list->head->data = NULL;

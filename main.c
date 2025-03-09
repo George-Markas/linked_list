@@ -2,34 +2,38 @@
 #include "linked_list.h"
 
 void print_list(const list_t* list) {
+    static int32_t step = 1;
     const node_t* temp = list->head;
-    while (temp != NULL) {
+    printf("%d) ", step);
+    while(temp != NULL) {
+        // Data is void* pointers, cast them as needed
         printf("%s", (char*)temp->data);
         temp = temp->next;
     }
-    putc('\n', stdout);
+    puts("\n");
+    step++;
 }
 
 int main(void) {
-    // Node data is assigned to nodes via void*, use pointer cast to deref
     list_t* my_list = list_init();
 
-    insert_at_head(my_list, " three", sizeof(" three"));
-    insert_at_head(my_list, " two", sizeof(" one"));
-    insert_at_head(my_list, "one", sizeof("one"));
-
-    /* insert_after() works with 0-based indexing. Index must be =< 0, if the index is greater than the list's length,
-    the insertion will be performed after the tail node */
-    insert_after(my_list, 1, " insertion_one!", sizeof(" insertion one!"));
-    insert_after(my_list, 2, " insertion_two!", sizeof(" insertion two!"));
-    insert_at_tail(my_list, " four", sizeof(" four"));
-
+    insert_at_head(my_list, "bar", sizeof(char) * 4); // 3 letters + null terminator = 4 chars
+    insert_at_head(my_list, "foo ", sizeof(char) * 5);
+    insert_at_tail(my_list, " baz", sizeof(char) * 5);
     print_list(my_list);
 
-    // Delete "one"
+    // Delete baz
+    delete(my_list, 2);
+    print_list(my_list);
+
+    // Insert baz inbetween foo and bar
+    insert_after(my_list, 0, "baz ", sizeof(char) * 5);
+    print_list(my_list);
+
+    // Delete foo
     delete_head(my_list);
-
     print_list(my_list);
+
     free_list(my_list);
 
     return EXIT_SUCCESS;
