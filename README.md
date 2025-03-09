@@ -1,3 +1,5 @@
+# Linked List
+
 Very simple singly-linked list implementation in C as a single header file.
 
 ## Example usage (as provided in main.c):
