@@ -1,8 +1,8 @@
 # Linked List
 
-Very simple singly-linked list implementation in C as a single header file.
+Singly-linked list implementation in "stb" format
 
-## Example usage (as provided in main.c):
+## Example usage:
 ```c
 #define LINKED_LIST_IMPL
 #include "linked_list.h"
